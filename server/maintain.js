@@ -13,6 +13,7 @@ pool.query('SELECT * FROM position', (err, data) => {
   if(err){
     console.log('position table missing from database. creating now')
     createPositionTable()
+    createPlayersTable()
   }
   else{
     page = data.rows[0].page
@@ -28,5 +29,12 @@ const createPositionTable = () => {
       if(err) throw err
       console.log('inserted (page: 1, length: 0) into position')
     })
+  })
+}
+
+const createPlayersTable = () => {
+  pool.query('CREATE TABLE players (id integer NOT NULL, name text NOT NULL, wins integer NOT NULL, losses integer NOT NULL, rating decimal NOT NULL, percent decimal NOT NULL, played integer NOT NULL)', (err) => {
+    if(err) throw err
+    console.log('players table created in database')
   })
 }
