@@ -27,6 +27,7 @@ pool.query('SELECT * FROM position', (err, data) => {
     page = data.rows[0].page
     length = data.rows[0].length
     check()
+    refresh()
   }
 })
 
@@ -82,24 +83,35 @@ const updateAllPlayers = () => {
   playersToUpdate = new Array
 }
 
+const refresh = () => {
+  const time = 1000 * 60 * 60 * 1 // 1 hour
+  setTimeout(() => {
+    console.log(new Date().toUTCString() + ' checking thejoustingpavilion')
+    checkTJP()
+    refresh()
+  }, time)
+}
+
 const check = () => {
   getJson(url + page, (err, games) => {
     if(err) throw err
     console.log('page ' + page + ' length ' + games.length)
-    for(var i = length; i < games.length; i++){
-      newGames.push(games[i])
-    }
-    if(games.length == 50){
-      length = 0
-      page++
-      check()
-    }
-    else{
-      newGames.forEach((game) => {
-        processGame(game)
-      })
-      newGames = []
-      console.log('done with thejoustingpavilion')
+    if(games.length > length){
+      for(var i = length; i < games.length; i++){
+        newGames.push(games[i])
+      }
+      if(games.length == 50){
+        length = 0
+        page++
+        check()
+      }
+      else{
+        newGames.forEach((game) => {
+          processGame(game)
+        })
+        newGames = []
+        console.log('done with thejoustingpavilion')
+      }
     }
   })
 }
