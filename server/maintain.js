@@ -60,7 +60,7 @@ const createPlayer = (id, name) => {
     played: 0
   }
   createPlayersArray.push((callback) => {
-    pool.query('INSERT INTO testplayers (id, name, rating, wins, losses, percent, played) VALUES ($1, $2, $3, $4, $5, $6, $7)', [id, name, 1200, 0, 0, 0, 0], (err, data) => {
+    pool.query('INSERT INTO players (id, name, rating, wins, losses, percent, played) VALUES ($1, $2, $3, $4, $5, $6, $7)', [id, name, 1200, 0, 0, 0, 0], (err, data) => {
       if(err) throw err
       console.log('created player id: ' + id)
     })
@@ -73,7 +73,7 @@ const updateAllPlayers = () => {
     updatePlayersArray.push((callback) => {
       let wins = players[id].wins
       let losses = players[id].losses
-      pool.query('UPDATE testplayers SET wins = $1, losses = $2, rating = $3, percent = $5, played = $6 WHERE id = $4', [wins, losses, players[id].rating, id, wins / (wins + losses), wins + losses], (err, data) => {
+      pool.query('UPDATE players SET wins = $1, losses = $2, rating = $3, percent = $5, played = $6 WHERE id = $4', [wins, losses, players[id].rating, id, wins / (wins + losses), wins + losses], (err, data) => {
         if(err) throw err
         console.log('updated player id: ' + id)
       })
