@@ -100,18 +100,40 @@ const check = () => {
       for(var i = length; i < games.length; i++){
         newGames.push(games[i])
       }
-      console.log(newGames.length)
       if(games.length == 50){
         length = 0
         page++
         check()
       }
       else{
+        length = games.length
         newGames.forEach((game) => {
           processGame(game)
         })
         newGames = []
         console.log('done with thejoustingpavilion')
+        updateAllPlayers()
+        let updatePositionArray = [(callback) => {
+          pool.query('UPDATE position SET page = $1, length = $2', [page, length], (err) => {
+            if(err) throw err
+            console.log('updated position')
+          })
+          callback()
+        }]
+        const asyncCreatePlayers = (callback) => {
+          async.series(createPlayersArray, callback)
+        }
+        const asyncUpdatePlayers = (callback) => {
+          async.series(updatePlayersArray, callback)
+        }
+        const asyncUpdatePosition = (callback) => {
+          async.series(updatePositionArray, callback)
+        }
+        async.series([
+          asyncCreatePlayers,
+          asyncUpdatePosition,
+          asyncUpdatePlayers
+        ])
       }
     }
   })
