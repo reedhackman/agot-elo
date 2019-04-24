@@ -104,7 +104,7 @@ const check = () => {
 }
 
 const process = (game) => {
-  else if(game.p1_id < 1 || game.p2_id < 1){
+  if(game.p1_id < 1 || game.p2_id < 1){
     return
   }
   else if(game.game_status != 100){
