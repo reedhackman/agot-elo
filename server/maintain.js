@@ -95,7 +95,7 @@ const check = () => {
     }
     else{
       newGames.forEach((game) => {
-        process(game)
+        processGame(game)
       })
       newGames = []
       console.log('done with thejoustingpavilion')
@@ -103,7 +103,7 @@ const check = () => {
   })
 }
 
-const process = (game) => {
+const processGame = (game) => {
   if(game.p1_id < 1 || game.p2_id < 1){
     return
   }
