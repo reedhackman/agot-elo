@@ -100,6 +100,7 @@ const check = () => {
       for(var i = length; i < games.length; i++){
         newGames.push(games[i])
       }
+      console.log(newGames.length)
       if(games.length == 50){
         length = 0
         page++
