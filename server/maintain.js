@@ -26,6 +26,7 @@ pool.query('SELECT * FROM position', (err, data) => {
   else{
     page = data.rows[0].page
     length = data.rows[0].length
+    check()
   }
 })
 
