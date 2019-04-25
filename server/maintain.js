@@ -9,6 +9,7 @@ const pool = new Pool({
   ssl: true
 })
 */
+
 const pool = new Pool({
   user: 'me',
   host: 'localhost',
@@ -30,6 +31,7 @@ let updateDecksArray = []
 let createMatchupsArray = []
 let matchupsToUpdate = {}
 let updateMatchupsArray = []
+let createGamesArray = []
 let players = {}
 let matchups = {}
 let decks = {}
@@ -47,6 +49,7 @@ pool.query('SELECT * FROM position', (err, data) => {
   else{
     page = data.rows[0].page
     length = data.rows[0].length
+    console.log(`page: ${page}, length: ${length}`)
   }
   console.log(new Date().toUTCString() + ' checking thejoustingpavilion in 5 minutes')
   setTimeout(() => {
@@ -54,6 +57,13 @@ pool.query('SELECT * FROM position', (err, data) => {
   }, 1000 * 60 * 5)
   refresh()
 })
+
+const createGamesTable = () => {
+  pool.query('CREATE TABLE games (winner_id integer, winner_faction text, winner_agenda text, loser_id integer, loser_faction text, loser_agenda text, tournament_date date)', (err) => {
+    if(err) throw err
+    console.log('games table created in database')
+  })
+}
 
 const createDecksTable = () => {
   pool.query('CREATE TABLE decks (faction text, agenda text, wins integer NOT NULL, losses integer NOT NULL)', (err) => {
@@ -63,7 +73,7 @@ const createDecksTable = () => {
 }
 
 const createIncompleteTable = () => {
-  pool.query('CREATE TABLE incomplete (game_id integer NOT NULL, tournament_id integer NOT NULL, first_checked date)', (err) => {
+  pool.query('CREATE TABLE incomplete (game_id integer NOT NULL, tournament_id integer NOT NULL, tournament_date date)', (err) => {
     if(err) throw err
     console.log('incomplete table created in database')
   })
@@ -280,6 +290,9 @@ const checkTJP = () => {
         const asyncUpdatePlayers = (callback) => {
           async.series(updatePlayersArray, callback)
         }
+        const asyncCreateGames = (callback) => {
+          async.series(createGamesArray, callback)
+        }
         const asyncUpdatePosition = (callback) => {
           pool.query('UPDATE position SET page = $1, length = $2', [page, length], (err) => {
             if(err) throw err
@@ -297,6 +310,7 @@ const checkTJP = () => {
           asyncCreatePlayers,
           asyncCreateMatchups,
           asyncCreateDecks,
+          asyncCreateGames,
           asyncUpdatePlayers,
           asyncUpdateDecks,
           asyncUpdateMatchups,
@@ -542,14 +556,14 @@ const processGamePlayers = (winner, loser) => {
 }
 
 const processGame = (game) => {
-  if(exclude.includes(('' + game.tournament_name).toLowerCase())){
+  if(('' + game.tournament_name).toLowerCase().includes(exclude)){
     return
   }
-  if(game.p1_id < 1 || game.p2_id < 1 || game.p1_name.includes('BYE') || game.p2_name.includes('BYE')){
+  if(game.p1_id < 1 || game.p2_id < 1 || game.p1_name.includes('BYE') || game.p2_name.includes('BYE') || game.p1_name.toLowerCase().includes('dummy') || game.p2_name.toLowerCase().includes('dummy')){
     return
   }
   else if(game.game_status != 100){
-    pool.query('INSERT INTO incomplete (game_id, tournament_id, first_checked) VALUES ($1, $2, $3)', [game.game_id, game.tournament_id, game.tournament_date], (err, data) => {
+    pool.query('INSERT INTO incomplete (game_id, tournament_id, tournament_date) VALUES ($1, $2, $3)', [game.game_id, game.tournament_id, game.tournament_date], (err, data) => {
       if(err) throw err
       console.log('incomplete game: ' + game.game_id)
     })
@@ -599,6 +613,13 @@ const processGame = (game) => {
     checkGameDecksAndMatchups(winner.faction, winner.agenda, loser.faction, loser.agenda)
     processGameDecksAndMatchups(winner.faction, winner.agenda, loser.faction, loser.agenda)
   }
+  createGamesArray.push((callback) => {
+    pool.query('INSERT INTO games (winner_id, loser_id, winner_faction, winner_agenda, loser_faction, loser_agenda, tournament_date)', [winner.id, loser.id, winner.faction, winner.agenda, loser.faction, loser.agenda, game.tournament_date], (err) => {
+      if(err) throw err
+      console.log('added a game')
+    })
+    callback()
+  })
 }
 
 const testGame = (game) => {

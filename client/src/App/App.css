@@ -28,6 +28,10 @@ td{
   padding-right: 10px;
 }
 
+a{
+  color: black;
+}
+
 .tablename{
   width: 500px;
 }

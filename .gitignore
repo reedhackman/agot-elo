@@ -3,3 +3,4 @@ node_modules
 scrape.js
 data.json
 testmaintain.js
+package-lock.json

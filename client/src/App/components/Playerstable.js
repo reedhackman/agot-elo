@@ -70,7 +70,7 @@ class Playerstable extends React.Component{
       let player = rows[j]
       list.push(
         <tr key={player.name}>
-          <td className='tablename'>{player.name}</td>
+          <td className='tablename'><Link to={`/players/${player.id}`}>{player.name}</Link></td>
           <td className='tablerating'>{Math.round(player.rating)}</td>
           <td className='tablepercent'>{(player.percent * 100).toFixed(1)}</td>
           <td className='tableplayed'>{player.played}</td>
