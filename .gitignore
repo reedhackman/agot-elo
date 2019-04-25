@@ -1,2 +1,5 @@
 node_modules
 .env
+scrape.js
+data.json
+testmaintain.js
