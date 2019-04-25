@@ -1,6 +1,6 @@
 import React from 'react'
 import Decks from './PlayerSpecificDecks.js'
-import Opponents from './PlayerSpecificOpponentsjs'
+import Opponents from './PlayerSpecificOpponents.js'
 
 class Playerspecific extends React.Component{
   constructor(props){

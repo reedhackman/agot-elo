@@ -8,6 +8,10 @@
   pointer-events: none;
 }
 
+tr: hover{
+  background: red;
+}
+
 table{
   border-collapse: collapse;
   margin: auto;
