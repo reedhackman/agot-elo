@@ -614,7 +614,7 @@ const processGame = (game) => {
     processGameDecksAndMatchups(winner.faction, winner.agenda, loser.faction, loser.agenda)
   }
   createGamesArray.push((callback) => {
-    pool.query('INSERT INTO games (winner_id, loser_id, winner_faction, winner_agenda, loser_faction, loser_agenda, tournament_date)', [winner.id, loser.id, winner.faction, winner.agenda, loser.faction, loser.agenda, game.tournament_date], (err) => {
+    pool.query('INSERT INTO games (winner_id, loser_id, winner_faction, winner_agenda, loser_faction, loser_agenda, tournament_date) VALUES ($1, $2, $3, $4, $5, $6, $7)', [winner.id, loser.id, winner.faction, winner.agenda, loser.faction, loser.agenda, game.tournament_date], (err) => {
       if(err) throw err
       console.log('added a game')
     })

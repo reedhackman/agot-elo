@@ -1,8 +1,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-const Navbar = () => (
-  <div className='navbar'>
+const Footer = () => (
+  <div className='footer'>
     <Link to='/'>
       <button variant="raised">
           Home
@@ -26,4 +26,4 @@ const Navbar = () => (
   </div>
 )
 
-export default Navbar
+export default Footer
