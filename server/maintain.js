@@ -45,6 +45,7 @@ pool.query('SELECT * FROM position', (err, data) => {
     createMatchupsTable()
     createIncompleteTable()
     createDecksTable()
+    createGamesTable()
   }
   else{
     page = data.rows[0].page
