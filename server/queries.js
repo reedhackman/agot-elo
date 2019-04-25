@@ -91,5 +91,7 @@ module.exports = {
   getDecksByFaction,
   getSpecificDeck,
   getAllMatchups,
-  getSpecificMatchup
+  getSpecificMatchup,
+  getAllGames,
+  getSpecificPlayerFromGames
 }
