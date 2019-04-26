@@ -59,7 +59,7 @@ pool.query('SELECT * FROM position', (err, data) => {
   console.log(new Date().toUTCString() + ' checking thejoustingpavilion in 1 minute')
   setTimeout(() => {
     checkTJP()
-  }, 1000 * 60 * 5)
+  }, 1000 * 60 * 1)
   refresh()
 })
 
@@ -157,7 +157,7 @@ const populatePlayers = () => {
 }
 
 const createGamesTable = () => {
-  pool.query('CREATE TABLE games (winner_id integer, winner_faction text, winner_agenda text, loser_id integer, loser_faction text, loser_agenda text, tournament_date date)', (err) => {
+  pool.query('CREATE TABLE games (winner_id integer, winner_faction text, winner_agenda text, loser_id integer, loser_faction text, loser_agenda text, tournament_date date, tournament_id integer)', (err) => {
     if(err) throw err
     console.log('games table created in database')
   })
@@ -712,7 +712,7 @@ const processGame = (game) => {
     processGameDecksAndMatchups(winner.faction, winner.agenda, loser.faction, loser.agenda)
   }
   createGamesArray.push((callback) => {
-    pool.query('INSERT INTO games (winner_id, loser_id, winner_faction, winner_agenda, loser_faction, loser_agenda, tournament_date) VALUES ($1, $2, $3, $4, $5, $6, $7)', [winner.id, loser.id, winner.faction, winner.agenda, loser.faction, loser.agenda, game.tournament_date], (err) => {
+    pool.query('INSERT INTO games (winner_id, loser_id, winner_faction, winner_agenda, loser_faction, loser_agenda, tournament_date, tournament_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', [winner.id, loser.id, winner.faction, winner.agenda, loser.faction, loser.agenda, game.tournament_date, game.tournament_id], (err) => {
       if(err) throw err
       console.log('added a game')
     })

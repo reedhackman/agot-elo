@@ -80,7 +80,6 @@ class Players extends React.Component{
         count++
       }
     })
-    console.log(count)
     this.setState({
       input: event.target.value,
       page: 1,

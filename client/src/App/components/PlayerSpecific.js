@@ -23,7 +23,6 @@ class Playerspecific extends React.Component{
     })
   }
   render(){
-    console.log(this.state.player)
     return(
       <div>
         <p>Name: {this.state.player.name}</p>
@@ -31,7 +30,7 @@ class Playerspecific extends React.Component{
         <p>Highest Rating Achieved: {Math.round(this.state.player.peak)}</p>
         <p>Games Played: {this.state.player.played}</p>
         <p>Win Percent: {(this.state.player.percent * 100).toFixed(1)}</p>
-        <Decks/>
+        <Decks games={this.state.games} id={this.state.player.id}/>
         <Opponents/>
       </div>
     )
