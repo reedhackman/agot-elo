@@ -14,14 +14,16 @@ import Footer from './components/Footer'
 class App extends Component {
   render() {
     const App = () => (
-      <div>
-        <Navbar/>
-        <Switch>
-          <Route exact path='/' component={Home}/>
-          <Route path='/players' component={Players}/>
-          <Route path='/decks' component={Decks}/>
-          <Route path='/tournaments' component={Tournaments}/>
-        </Switch>
+      <div id='app-wrapper'>
+        <div id='content-wrapper'>
+          <Navbar/>
+          <Switch>
+            <Route exact path='/' component={Home}/>
+            <Route path='/players' component={Players}/>
+            <Route path='/decks' component={Decks}/>
+            <Route path='/tournaments' component={Tournaments}/>
+          </Switch>
+        </div>
         <Footer/>
       </div>
     )

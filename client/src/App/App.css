@@ -9,18 +9,31 @@
 }
 
 .navbar{
-  background-color: blue;
+  background: #8eaec2;
   color: white;
   text-align: center;
+  height: 2.5rem;
 }
 
-.footer{
-  position: fixed;
-  left: 0;
+#root{
+  min-height: 100vh;
+}
+
+#app-wrapper{
+  min-height: 100vh;
+  position: relative;
+}
+
+#content-wrapper{
+  padding-bottom: 2.5rem;
+}
+
+#footer{
+  position: absolute;
   bottom: 0;
   width: 100%;
-  background-color: red;
-  color: white;
+  height: 2.5rem;
+  background: #8eaec2;
   text-align: center;
 }
 

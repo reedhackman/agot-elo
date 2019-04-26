@@ -36,6 +36,7 @@ let players = {}
 let matchups = {}
 let decks = {}
 let exclude = ['draft', 'keyforge', 'destiny', 'l5r']
+let tournamentsToExclude = []
 
 pool.query('SELECT * FROM position', (err, data) => {
   if(err){
@@ -51,13 +52,109 @@ pool.query('SELECT * FROM position', (err, data) => {
     page = data.rows[0].page
     length = data.rows[0].length
     console.log(`page: ${page}, length: ${length}`)
+    populatePlayers()
+    populateDecks()
+    populateMatchups()
   }
-  console.log(new Date().toUTCString() + ' checking thejoustingpavilion in 5 minutes')
+  console.log(new Date().toUTCString() + ' checking thejoustingpavilion in 1 minute')
   setTimeout(() => {
     checkTJP()
   }, 1000 * 60 * 5)
   refresh()
 })
+
+const populateMatchups = () => {
+  pool.query('SELECT * FROM matchups', (err, data) => {
+    if(err) throw err
+    if(data.rows.length){
+      data.rows.forEach((matchup) => {
+        if(!(matchups[matchup.faction])){
+          matchups[matchup.faction] = {
+            [matchup.agenda]: {
+              [matchup.oppfaction]: {
+                [matchup.oppagenda]: {
+                  wins: matchup.wins,
+                  losses: matchup.losses
+                }
+              }
+            }
+          }
+        }
+        else if(!(matchups[matchup.faction][matchup.agenda])){
+          matchups[matchup.faction][matchup.agenda] = {
+            [matchup.oppfaction]: {
+              [matchup.oppagenda]: {
+                wins: matchup.wins,
+                losses: matchup.losses
+              }
+            }
+          }
+        }
+        else if(!(matchups[matchup.faction][matchup.agenda][matchup.oppfaction])){
+          matchups[matchup.faction][matchup.agenda][matchup.oppfaction] = {
+            [matchup.oppagenda]: {
+              wins: matchup.wins,
+              losses: matchup.losses
+            }
+          }
+        }
+        else{
+          matchups[matchup.faction][matchup.agenda][matchup.oppfaction][matchup.oppagenda] = {
+            wins: matchup.wins,
+            losses: matchup.losses
+          }
+        }
+      })
+      console.log('loaded matchups from db')
+    }
+  })
+}
+
+const populateDecks = () => {
+  pool.query('SELECT * FROM decks', (err, data) => {
+    if(err) throw err
+    if(data.rows.length){
+      data.rows.forEach((deck) => {
+        if(!(decks[deck.faction])){
+          decks[deck.faction] = {
+            [deck.agenda]: {
+              wins: deck.wins,
+              losses: deck.losses
+            }
+          }
+        }
+        else{
+          decks[deck.faction][deck.agenda] = {
+            wins: deck.wins,
+            losses: deck.losses
+          }
+        }
+      })
+      console.log('loaded decks from db')
+    }
+  })
+}
+
+const populatePlayers = () => {
+  pool.query('SELECT * FROM players', (err, data) => {
+    if(err) throw err
+    if(data.rows.length){
+      data.rows.forEach((player) => {
+        players[player.id] = {
+          name: player.name,
+          id: player.id,
+          wins: player.wins,
+          losses: player.losses,
+          rating: player.rating,
+          percent: player.percent,
+          played: player.played,
+          peak: player.peak
+        }
+      })
+      console.log('loaded players from db')
+    }
+  })
+}
 
 const createGamesTable = () => {
   pool.query('CREATE TABLE games (winner_id integer, winner_faction text, winner_agenda text, loser_id integer, loser_faction text, loser_agenda text, tournament_date date)', (err) => {
@@ -557,7 +654,7 @@ const processGamePlayers = (winner, loser) => {
 }
 
 const processGame = (game) => {
-  if(('' + game.tournament_name).toLowerCase().includes(exclude)){
+  if(tournamentsToExclude.includes(game.tournament_id)){
     return
   }
   if(game.p1_id < 1 || game.p2_id < 1 || game.p1_name.includes('BYE') || game.p2_name.includes('BYE') || game.p1_name.toLowerCase().includes('dummy') || game.p2_name.toLowerCase().includes('dummy')){
@@ -624,9 +721,11 @@ const processGame = (game) => {
 }
 
 const testGame = (game) => {
-  if(game.p1_agenda == 'The Power of Wealth' || game.p1_agenda == "Treaty" || game.p1_agenda == 'Uniting the Seven Kingdoms' || game.p1_agenda == 'Protectors of the Realm' || game.p2_agenda == 'The Power of Wealth' || game.p2_agenda == "Treaty" || game.p2_agenda == 'Uniting the Seven Kingdoms' || game.p2_agenda == 'Protectors of the Realm'){
-    if(!(exclude.includes(('' + game.tournament_name).toLowerCase()))){
-      exclude.push(('' + game.tournament_name).toLowerCase())
-    }
+  let t_name = game.tournament_name.toLowerCase()
+  if(t_name.includes('keyforge') || t_name.includes('draft') || t_name.includes('destiny') || t_name.includes('l5r')){
+    tournamentsToExclude.push(game.tournament_id)
+  }
+  else if(game.p1_agenda == 'The Power of Wealth' || game.p1_agenda == "Treaty" || game.p1_agenda == 'Uniting the Seven Kingdoms' || game.p1_agenda == 'Protectors of the Realm' || game.p2_agenda == 'The Power of Wealth' || game.p2_agenda == "Treaty" || game.p2_agenda == 'Uniting the Seven Kingdoms' || game.p2_agenda == 'Protectors of the Realm'){
+    tournamentsToExclude.push(game.tournament_id)
   }
 }
