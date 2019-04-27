@@ -98,11 +98,14 @@ const populateMatchups = () => {
             }
           }
         }
-        else{
+        else if(!(matchups[matchup.faction][matchup.agenda][matchup.oppfaction][matchup.oppagenda])){
           matchups[matchup.faction][matchup.agenda][matchup.oppfaction][matchup.oppagenda] = {
             wins: matchup.wins,
             losses: matchup.losses
           }
+        }
+        else{
+          console.log('duplicate matchup')
         }
       })
       console.log('loaded matchups from db')
@@ -123,11 +126,14 @@ const populateDecks = () => {
             }
           }
         }
-        else{
+        else if(!(decks[deck.faction][deck.agenda])){
           decks[deck.faction][deck.agenda] = {
             wins: deck.wins,
             losses: deck.losses
           }
+        }
+        else{
+          console.log('duplicate deck')
         }
       })
       console.log('loaded decks from db')
@@ -140,15 +146,17 @@ const populatePlayers = () => {
     if(err) throw err
     if(data.rows.length){
       data.rows.forEach((player) => {
-        players[player.id] = {
-          name: player.name,
-          id: player.id,
-          wins: player.wins,
-          losses: player.losses,
-          rating: player.rating,
-          percent: player.percent,
-          played: player.played,
-          peak: player.peak
+        if(!(players[player.id])){
+          players[player.id] = {
+            name: player.name,
+            id: player.id,
+            wins: player.wins,
+            losses: player.losses,
+            rating: player.rating,
+            percent: player.percent,
+            played: player.played,
+            peak: player.peak
+          }
         }
       })
       console.log('loaded players from db')
@@ -336,7 +344,7 @@ const updateAllPlayers = () => {
 }
 
 const refresh = () => {
-  const time = 1000 * 60 * 60 * 1 // 1 hour
+  const time = 1000 * 60 * 60 * 24 // 1 day
   setTimeout(() => {
     console.log(new Date().toUTCString() + ' checking thejoustingpavilion')
     checkTJP()
@@ -655,10 +663,10 @@ const processGame = (game) => {
   if(tournamentsToExclude.includes(game.tournament_id)){
     return
   }
-  if(game.p1_id < 1 || game.p2_id < 1 || game.p1_name.toLowerCase().includes('bye') || game.p2_name.toLowerCase().includes('bye')game.p1_name.includes('BYE') || game.p2_name.includes('BYE') || game.p1_name.toLowerCase().includes('dummy') || game.p2_name.toLowerCase().includes('dummy')){
+  if(game.p1_id < 1 || game.p2_id < 1 || (game.p1_name.toLowerCase().includes('bye')) || game.p2_name.toLowerCase().includes('bye') || game.p1_name.toLowerCase().includes('dummy') || game.p2_name.toLowerCase().includes('dummy')){
     return
   }
-  else if(game.game_status != 100){
+  if(game.game_status != 100){
     pool.query('INSERT INTO incomplete (game_id, tournament_id, tournament_date) VALUES ($1, $2, $3)', [game.game_id, game.tournament_id, game.tournament_date], (err, data) => {
       if(err) throw err
       console.log('incomplete game: ' + game.game_id)
