@@ -220,7 +220,6 @@ const createDeck = (faction, agenda) => {
   createDecksArray.push((callback) => {
     pool.query('INSERT INTO decks (faction, agenda, wins, losses) VALUES ($1, $2, $3, $4)', [faction, agenda, 0, 0], (err) => {
       if(err) throw err
-      console.log('created deck ' + faction + ' ' + agenda)
     })
     callback()
   })
@@ -266,7 +265,6 @@ const createMatchup = (faction, agenda, oppfaction, oppagenda) => {
   createMatchupsArray.push((callback) => {
     pool.query('INSERT INTO matchups (faction, agenda, oppfaction, oppagenda, wins, losses) VALUES ($1, $2, $3, $4, $5, $6)', [faction, agenda, oppfaction, oppagenda, 0, 0], (err) => {
       if(err) throw err
-      console.log('created matchup ' + faction + ' ' + agenda + ' vs. ' + oppfaction + ' ' + oppagenda)
     })
     callback()
   })
@@ -286,7 +284,6 @@ const createPlayer = (id, name) => {
   createPlayersArray.push((callback) => {
     pool.query('INSERT INTO players (id, name, rating, wins, losses, percent, played, peak) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', [id, name, 1200, 0, 0, 0, 0, 1200], (err, data) => {
       if(err) throw err
-      console.log('created player id ' + id)
     })
     callback()
   })
@@ -298,7 +295,6 @@ const updateAllDecks = () => {
       updateDecksArray.push((callback) => {
         pool.query('UPDATE decks SET wins = $1, losses = $2 WHERE faction = $3 AND agenda = $4', [decks[faction][agenda].wins, decks[faction][agenda].losses, faction, agenda], (err) => {
           if(err) throw err
-          console.log('updated decks ' + faction + ' ' + agenda)
         })
         callback()
       })
@@ -315,7 +311,6 @@ const updateAllMatchups = () => {
           updateMatchupsArray.push((callback) => {
             pool.query('UPDATE matchups SET wins = $1, losses = $2 WHERE faction = $3 AND agenda = $4 AND oppfaction = $5 AND oppagenda = $6', [matchups[faction][agenda][oppfaction][oppagenda].wins, matchups[faction][agenda][oppfaction][oppagenda].losses, faction, agenda, oppfaction, oppagenda], (err) => {
               if(err) throw err
-              console.log('updated matchup ' + faction + ' ' + agenda + ' vs ' + oppfaction + ' ' + oppagenda)
             })
             callback()
           })
@@ -333,7 +328,6 @@ const updateAllPlayers = () => {
       let losses = players[id].losses
       pool.query('UPDATE players SET wins = $1, losses = $2, rating = $3, percent = $5, played = $6, peak = $7 WHERE id = $4', [wins, losses, players[id].rating, id, wins / (wins + losses), wins + losses, players[id].peak], (err, data) => {
         if(err) throw err
-        console.log('updated player id: ' + id)
       })
       callback()
     })
@@ -408,12 +402,16 @@ const checkTJP = () => {
           asyncCreatePlayers,
           asyncCreateMatchups,
           asyncCreateDecks,
-          asyncCreateGames,
-          asyncUpdatePlayers,
-          asyncUpdateDecks,
-          asyncUpdateMatchups,
-          asyncUpdatePosition
+          asyncCreateGames
         ])
+        setTimeout(() => {
+          async.series([
+            asyncUpdatePlayers,
+            asyncUpdateDecks,
+            asyncUpdateMatchups,
+            asyncUpdatePosition
+          ])
+        }, 1000 * 60 * 1)
       }
     }
   })
@@ -657,7 +655,7 @@ const processGame = (game) => {
   if(tournamentsToExclude.includes(game.tournament_id)){
     return
   }
-  if(game.p1_id < 1 || game.p2_id < 1 || game.p1_name.includes('BYE') || game.p2_name.includes('BYE') || game.p1_name.toLowerCase().includes('dummy') || game.p2_name.toLowerCase().includes('dummy')){
+  if(game.p1_id < 1 || game.p2_id < 1 || game.p1_name.toLowerCase().includes('bye') || game.p2_name.toLowerCase().includes('bye')game.p1_name.includes('BYE') || game.p2_name.includes('BYE') || game.p1_name.toLowerCase().includes('dummy') || game.p2_name.toLowerCase().includes('dummy')){
     return
   }
   else if(game.game_status != 100){
@@ -714,7 +712,6 @@ const processGame = (game) => {
   createGamesArray.push((callback) => {
     pool.query('INSERT INTO games (winner_id, loser_id, winner_faction, winner_agenda, loser_faction, loser_agenda, tournament_date, tournament_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', [winner.id, loser.id, winner.faction, winner.agenda, loser.faction, loser.agenda, game.tournament_date, game.tournament_id], (err) => {
       if(err) throw err
-      console.log('added a game')
     })
     callback()
   })
