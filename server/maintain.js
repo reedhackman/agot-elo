@@ -40,7 +40,7 @@ let tournamentsToExclude = []
 
 pool.query('SELECT * FROM position', (err, data) => {
   if(err){
-    console.log('tables missing from database')
+    console.log(err)
     createPositionTable()
     createPlayersTable()
     createMatchupsTable()
@@ -65,7 +65,10 @@ pool.query('SELECT * FROM position', (err, data) => {
 
 const populateMatchups = () => {
   pool.query('SELECT * FROM matchups', (err, data) => {
-    if(err) throw err
+    if(err){
+      console.log(err)
+      createMatchupsTable()
+    }
     if(data.rows.length){
       data.rows.forEach((matchup) => {
         if(!(matchups[matchup.faction])){
@@ -73,8 +76,8 @@ const populateMatchups = () => {
             [matchup.agenda]: {
               [matchup.oppfaction]: {
                 [matchup.oppagenda]: {
-                  wins: matchup.wins,
-                  losses: matchup.losses
+                  wins: parseInt(matchup.wins),
+                  losses: parseInt(matchup.losses)
                 }
               }
             }
@@ -84,8 +87,8 @@ const populateMatchups = () => {
           matchups[matchup.faction][matchup.agenda] = {
             [matchup.oppfaction]: {
               [matchup.oppagenda]: {
-                wins: matchup.wins,
-                losses: matchup.losses
+                wins: parseInt(matchup.wins),
+                losses: parseInt(matchup.losses)
               }
             }
           }
@@ -93,15 +96,15 @@ const populateMatchups = () => {
         else if(!(matchups[matchup.faction][matchup.agenda][matchup.oppfaction])){
           matchups[matchup.faction][matchup.agenda][matchup.oppfaction] = {
             [matchup.oppagenda]: {
-              wins: matchup.wins,
-              losses: matchup.losses
+              wins: parseInt(matchup.wins),
+              losses: parseInt(matchup.losses)
             }
           }
         }
         else if(!(matchups[matchup.faction][matchup.agenda][matchup.oppfaction][matchup.oppagenda])){
           matchups[matchup.faction][matchup.agenda][matchup.oppfaction][matchup.oppagenda] = {
-            wins: matchup.wins,
-            losses: matchup.losses
+            wins: parseInt(matchup.wins),
+            losses: parseInt(matchup.losses)
           }
         }
         else{
@@ -115,21 +118,24 @@ const populateMatchups = () => {
 
 const populateDecks = () => {
   pool.query('SELECT * FROM decks', (err, data) => {
-    if(err) throw err
+    if(err){
+      console.log(err)
+      createDecksTable()
+    }
     if(data.rows.length){
       data.rows.forEach((deck) => {
         if(!(decks[deck.faction])){
           decks[deck.faction] = {
             [deck.agenda]: {
-              wins: deck.wins,
-              losses: deck.losses
+              wins: parseInt(deck.wins),
+              losses: parseInt(deck.losses)
             }
           }
         }
         else if(!(decks[deck.faction][deck.agenda])){
           decks[deck.faction][deck.agenda] = {
-            wins: deck.wins,
-            losses: deck.losses
+            wins: parseInt(deck.wins),
+            losses: parseInt(deck.losses)
           }
         }
         else{
@@ -143,19 +149,22 @@ const populateDecks = () => {
 
 const populatePlayers = () => {
   pool.query('SELECT * FROM players', (err, data) => {
-    if(err) throw err
+    if(err){
+      console.log(err)
+      createPlayersTable()
+    }
     if(data.rows.length){
       data.rows.forEach((player) => {
         if(!(players[player.id])){
           players[player.id] = {
             name: player.name,
             id: player.id,
-            wins: player.wins,
-            losses: player.losses,
-            rating: player.rating,
-            percent: player.percent,
-            played: player.played,
-            peak: player.peak
+            wins: parseInt(player.wins),
+            losses: parseInt(player.losses),
+            rating: parseFloat(player.rating),
+            percent: parseFloat(player.percent),
+            played: parseInt(player.played),
+            peak: parseFloat(player.peak)
           }
         }
       })

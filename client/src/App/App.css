@@ -15,6 +15,12 @@
   height: 2.5rem;
 }
 
+.wrapper{
+  border: 1px solid lightgray;
+  width: 1000px;
+  margin: auto;
+}
+
 #root{
   min-height: 100vh;
 }

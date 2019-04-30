@@ -14,7 +14,8 @@ class Players extends React.Component{
       sortby: 'name',
       ascending: true,
       input: '',
-      mingames: 0
+      mingames: 0,
+      allplayers: {}
     }
     this.handleSearch = this.handleSearch.bind(this)
     this.handleSort = this.handleSort.bind(this)
@@ -103,8 +104,27 @@ class Players extends React.Component{
   async componentDidMount(){
     const res = await fetch('/api/players')
     const data = await res.json()
+    let players = {}
+    data.forEach((player) => {
+      if(!(players[player.id])){
+        players[player.id] = {
+          id: player.id,
+          name: player.name,
+          wins: player.wins,
+          losses: player.losses,
+          rating: player.rating,
+          percent: player.percent,
+          played: player.played,
+          peak: player.peak
+        }
+      }
+      else{
+        console.log('this is a bug')
+      }
+    })
     this.setState({
       playerlist: data,
+      allplayers: players,
       page: Math.ceil(data.length / (data.length + 1)),
       last: Math.ceil(data.length / 50)
     })
@@ -133,7 +153,7 @@ class Players extends React.Component{
             <h2>Loading Players...</h2>
           )
         }}/>
-        <Route path='/players/:id' component={PlayerSpecific}/>
+        <Route path='/players/:id' render={({ match }) => <PlayerSpecific match={match} players={this.state.allplayers}/>}/>
       </div>
     )
   }
