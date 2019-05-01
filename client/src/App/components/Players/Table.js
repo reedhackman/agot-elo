@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-class Playerstable extends React.Component{
+export default class extends React.Component{
   render(){
     let data = this.props.state.playerlist
     let rows = []
@@ -101,5 +101,3 @@ class Playerstable extends React.Component{
     )
   }
 }
-
-export default Playerstable

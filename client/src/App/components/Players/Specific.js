@@ -1,8 +1,8 @@
 import React from 'react'
-import Decks from './PlayerSpecificDecks.js'
-import Opponents from './PlayerSpecificOpponents.js'
+import Decks from './SpecificDecks.js'
+import Opponents from './SpecificOpponents.js'
 
-class Playerspecific extends React.Component{
+export default class extends React.Component{
   constructor(props){
     super(props)
     this.state = {
@@ -52,5 +52,3 @@ class Playerspecific extends React.Component{
     )
   }
 }
-
-export default Playerspecific

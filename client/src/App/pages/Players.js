@@ -1,8 +1,8 @@
 import React from 'react'
 import { Route, Link } from 'react-router-dom'
 
-import PlayersTable from '../components/PlayersTable'
-import PlayerSpecific from '../components/PlayerSpecific'
+import Table from '../components/Players/Table'
+import Specific from '../components/Players/Specific'
 
 class Players extends React.Component{
   constructor(props){
@@ -146,14 +146,14 @@ class Players extends React.Component{
         <Route exact path='/players' render={() => {
           if(this.state.playerlist.length){
             return(
-              <PlayersTable handlers={handlers} state={this.state}/>
+              <Table handlers={handlers} state={this.state}/>
             )
           }
           return(
             <h2>Loading Players...</h2>
           )
         }}/>
-        <Route path='/players/:id' render={({ match }) => <PlayerSpecific match={match} players={this.state.allplayers}/>}/>
+        <Route path='/players/:id' render={({ match }) => <Specific match={match} players={this.state.allplayers}/>}/>
       </div>
     )
   }

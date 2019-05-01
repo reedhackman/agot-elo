@@ -21,6 +21,27 @@
   margin: auto;
 }
 
+.table-name{
+  width: 200px;
+  text-align: left;
+  padding-left: 15px;
+}
+
+.table-percent, .table-played{
+  width: 60px;
+}
+
+.top5faction{
+  border: 1px solid lightgray;
+  margin: 10px;
+  width: 450px;
+}
+
+.inline-wrapper{
+  display: inline-block;
+  width: 100%;
+}
+
 #root{
   min-height: 100vh;
 }
@@ -32,6 +53,9 @@
 
 #content-wrapper{
   padding-bottom: 2.5rem;
+  width: 978px;
+  margin: auto;
+  border: 1px solid lightgray;
 }
 
 #footer{
@@ -43,8 +67,8 @@
   text-align: center;
 }
 
-tr: hover{
-  background: red;
+tbody tr:hover{
+  background-color: lightgray;
 }
 
 table{
@@ -53,7 +77,6 @@ table{
   border: 1px solid black;
   margin-top: 10px;
   margin-bottom: 10px;
-  width: 800px;
 }
 
 th{
